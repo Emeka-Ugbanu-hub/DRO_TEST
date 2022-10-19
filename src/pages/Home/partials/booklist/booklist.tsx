@@ -1,14 +1,23 @@
-import React, { useEffect, useCallback, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "./booklist.css";
 
+/*map props type declaration*/
+type Values = {
+  authors: string;
+  name: string;
+  publisher: string;
+  isbn: number;
+  released: number;
+};
 const BookList = ({ query }: any) => {
-  const [pageNum, setPageNum] = useState(1);
-  const [size, setSize] = useState(10);
+  /*Declare State*/
+  const [pageNum, setPageNum] = useState<number>(1);
+  const [size, setSize] = useState<number>(10);
   const [lastElement, setLastElement] = useState<any>(null);
-  const [data, setData] = useState([]);
-  const [charac, setCharac] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<[]>([]);
+  const [charac, setCharac] = useState<[]>([]);
+  const [loading, setLoading] = useState<Boolean>(true);
 
   const observer = useRef(
     new IntersectionObserver(
@@ -30,6 +39,8 @@ const BookList = ({ query }: any) => {
       }
     )
   );
+
+  /*observer infinite scroll useEffect */
   useEffect(() => {
     const currentElement = lastElement;
     const currentObserver = observer.current;
@@ -45,6 +56,7 @@ const BookList = ({ query }: any) => {
     };
   }, [lastElement]);
 
+  /*book api useEffect*/
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -62,6 +74,7 @@ const BookList = ({ query }: any) => {
     fetchData();
   }, [size, pageNum]);
 
+  /*Character api useEffect*/
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -79,6 +92,7 @@ const BookList = ({ query }: any) => {
     fetchData();
   }, []);
 
+  /*filter character based on user input*/
   const t = charac.filter(
     (o: any) =>
       o.name.toLowerCase().includes(query) ||
@@ -94,7 +108,7 @@ const BookList = ({ query }: any) => {
             if (o.isbn.toLowerCase().includes(query)) return true;
             if (o.publisher.toLowerCase().includes(query)) return true;
             if (o.released.toLowerCase().includes(query)) return true;
-            let newArray = o.authors.map((item: any) => {
+            let newArray = o.authors.map((item: string) => {
               if (item.toLowerCase().includes(query)) {
                 return true;
               }
@@ -108,19 +122,24 @@ const BookList = ({ query }: any) => {
             });
             if (test[0]) return true;
           })
-          .map(({ authors, name, publisher, isbn, released }: any, i: any) => {
-            return (
-              <div className="item_container" ref={setLastElement}>
-                <div className="book_box">
-                  <span className="book_name">{name}</span>
-                  <span className="book_author">{authors}</span>
+          .map(
+            (
+              { authors, name, publisher, isbn, released }: Values,
+              i: number
+            ) => {
+              return (
+                <div className="item_container" key={i} ref={setLastElement}>
+                  <div className="book_box">
+                    <span className="book_name">{name}</span>
+                    <span className="book_author">{authors}</span>
+                  </div>
+                  <span className="book_publisher"> {publisher}</span>
+                  <span className="book_isbn">isbn: {isbn}</span>
+                  <span className="book_released">released: {released}</span>
                 </div>
-                <span className="book_publisher"> {publisher}</span>
-                <span className="book_isbn">isbn: {isbn}</span>
-                <span className="book_released">released: {released}</span>
-              </div>
-            );
-          })}
+              );
+            }
+          )}
       </div>
     </>
   );

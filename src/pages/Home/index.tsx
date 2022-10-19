@@ -1,16 +1,17 @@
-import React, { useEffect, useCallback, useRef, useState } from "react";
+import React, { useState } from "react";
 import BookList from "./partials/booklist/booklist";
 import "./index.css";
 
 const Home = () => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState<string>("");
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
 
-  const handleInput = (e: any) => {
-    setQuery(e.target.value.toLowerCase());
+  const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
+    setQuery(target.value.toLowerCase());
   };
 
   return (
@@ -20,7 +21,7 @@ const Home = () => {
           <span className="form_text_header">Hi there Booklover</span>
           <span className="form_text">lets find your dream book!</span>
         </div>
-        <form className="form-search" onSubmit={handleSubmit}>
+        <form className="form-search" action="" onSubmit={handleSubmit}>
           <input
             type="search"
             name="search"
